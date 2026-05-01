@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, ChannelType } = require('discord.js');
 
 module.exports = {
     name: 'channelinfo',
@@ -6,7 +6,12 @@ module.exports = {
     async execute(message, args) {
 
         const error = (msg) => ({
-            embeds: [{ title: '❌ Error', description: msg, color: 0xff0000 }]
+            embeds: [
+                new EmbedBuilder()
+                    .setTitle('❌ Error')
+                    .setDescription(msg)
+                    .setColor(0xff0000)
+            ]
         });
 
         const channel =
@@ -18,15 +23,32 @@ module.exports = {
             return message.reply(error('Canal no encontrado.'));
         }
 
-        message.reply({
+        const typeMap = {
+            [ChannelType.GuildText]: 'Texto',
+            [ChannelType.GuildVoice]: 'Voz',
+            [ChannelType.GuildCategory]: 'Categoría',
+            [ChannelType.GuildAnnouncement]: 'Anuncios',
+            [ChannelType.GuildForum]: 'Foro'
+        };
+
+        const perms = channel.permissionsFor(message.guild.members.me);
+
+        return message.reply({
             embeds: [
                 new EmbedBuilder()
-                    .setTitle('📺 Info del canal')
-                    .addFields(
-                        { name: 'Nombre', value: channel.name },
-                        { name: 'ID', value: channel.id }
-                    )
+                    .setTitle('📺 Información del canal')
                     .setColor(0x3498db)
+                    .addFields(
+                        { name: 'Nombre', value: channel.name, inline: true },
+                        { name: 'ID', value: channel.id, inline: true },
+                        { name: 'Tipo', value: typeMap[channel.type] || 'Desconocido', inline: true },
+                        { name: 'NSFW', value: channel.nsfw ? 'Sí' : 'No', inline: true },
+                        { name: 'Posición', value: String(channel.position || 'N/A'), inline: true },
+                        { name: 'Creado', value: `<t:${Math.floor(channel.createdTimestamp / 1000)}:F>` },
+                        { name: 'Permisos del bot', value: perms.toArray().slice(0, 8).join(', ') || 'Ninguno' }
+                    )
+                    .setFooter({ text: 'Información avanzada del canal' })
+                    .setTimestamp()
             ]
         });
     }
