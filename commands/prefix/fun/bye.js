@@ -1,29 +1,22 @@
 const { EmbedBuilder } = require('discord.js');
+const { getActionGif } = require('../../utils/gifs');
 
 module.exports = {
     name: 'bye',
 
     async execute(message) {
 
-        const user =
-            message.mentions.users.first() ||
-            message.author;
+        const user = message.mentions.users.first() || message.author;
 
-        let gif;
+        const gif = await getActionGif('bye', 'https://media.tenor.com/bye.gif');
 
-        try {
-            const res = await fetch('https://api.waifu.pics/sfw/bye');
-            const data = await res.json();
-            gif = data.url;
-        } catch {
-            gif = null;
-        }
-
-        const embed = new EmbedBuilder()
-            .setTitle(`${user.username} se despide 👋`)
-            .setColor(0x5865f2)
-            .setImage(gif);
-
-        message.reply({ embeds: [embed] });
+        message.reply({
+            embeds: [
+                new EmbedBuilder()
+                    .setTitle(`${user.username} se despide 👋`)
+                    .setImage(gif)
+                    .setColor(0x5865f2)
+            ]
+        });
     }
 };

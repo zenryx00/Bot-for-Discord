@@ -1,21 +1,22 @@
 const { EmbedBuilder } = require('discord.js');
-const { getActionGif } = require('../../utils/gifs');
+const { getNekoGif } = require('../../utils/gifs');
 
 module.exports = {
-    name: 'happy',
+    name: 'neko',
 
     async execute(message) {
 
         const user = message.mentions.users.first() || message.author;
 
-        const gif = await getActionGif('happy', 'https://media.tenor.com/happy.gif');
+        const gif = await getNekoGif();
 
         message.reply({
             embeds: [
                 new EmbedBuilder()
-                    .setTitle(`${user.username} está feliz 😊`)
+                    .setTitle('🐱 Neko')
+                    .setDescription(`${user.username} encontró un neko`)
                     .setImage(gif)
-                    .setColor(0xffcc00)
+                    .setColor(0xffb6c1)
             ]
         });
     }

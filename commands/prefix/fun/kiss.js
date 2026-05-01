@@ -2,29 +2,29 @@ const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('
 const { getActionGif } = require('../../utils/gifs');
 
 module.exports = {
-    name: 'hug',
+    name: 'kiss',
 
     async execute(message) {
 
         const target = message.mentions.users.first();
         if (!target) return message.reply('❌ Menciona a alguien.');
 
-        const gif = await getActionGif('hug', 'https://media.tenor.com/hug.gif');
+        const gif = await getActionGif('kiss', 'https://media.tenor.com/kiss.gif');
 
         const row = new ActionRowBuilder().addComponents(
             new ButtonBuilder()
-                .setCustomId(`return_hug_${message.author.id}_${target.id}`)
-                .setLabel('Devolver abrazo 🤗')
-                .setStyle(ButtonStyle.Success)
+                .setCustomId(`return_kiss_${message.author.id}_${target.id}`)
+                .setLabel('Devolver beso 💋')
+                .setStyle(ButtonStyle.Danger)
         );
 
         const msg = await message.reply({
             embeds: [
                 new EmbedBuilder()
-                    .setTitle('🤗 Abrazo')
-                    .setDescription(`${message.author} abrazó a ${target}`)
+                    .setTitle('💋 Beso')
+                    .setDescription(`${message.author} besó a ${target}`)
                     .setImage(gif)
-                    .setColor(0xff69b4)
+                    .setColor(0xff4d6d)
             ],
             components: [row]
         });
@@ -33,19 +33,19 @@ module.exports = {
 
         collector.on('collect', async i => {
 
-            if (i.customId !== `return_hug_${message.author.id}_${target.id}`) return;
+            if (i.customId !== `return_kiss_${message.author.id}_${target.id}`) return;
 
             if (i.user.id !== target.id)
                 return i.reply({ content: '❌ Solo el usuario mencionado puede responder.', ephemeral: true });
 
-            await i.reply({ content: '🤗 Abrazo devuelto!', ephemeral: true });
+            await i.reply({ content: '💋 Beso devuelto!', ephemeral: true });
 
             await message.channel.send({
                 embeds: [
                     new EmbedBuilder()
-                        .setTitle('💞 Abrazo recíproco')
-                        .setDescription(`${target} devolvió el abrazo a ${message.author}`)
-                        .setColor(0xff69b4)
+                        .setTitle('💞 Beso recíproco')
+                        .setDescription(`${target} devolvió el beso a ${message.author}`)
+                        .setColor(0xff4d6d)
                 ]
             });
 
