@@ -1,37 +1,55 @@
 const { EmbedBuilder } = require('discord.js');
+const fs = require('fs');
 
 module.exports = {
     name: 'warnings',
 
     async execute(message, args) {
 
-        const { getWarns } = global.utils.warns;
+        const error = (msg) => ({
+            embeds: [
+                new EmbedBuilder()
+                    .setTitle('❌ Error')
+                    .setDescription(msg)
+                    .setColor(0xff0000)
+            ]
+        });
 
         const user =
             message.mentions.users.first() ||
-            message.guild.members.cache.get(args[0])?.user ||
-            message.author;
+            await message.client.users.fetch(args[0]).catch(() => message.author);
 
-        const warns = getWarns(user.id);
+        const path = './Data/warns.json';
 
-        if (!warns.length) {
-            return message.reply(`✅ ${user.username} Este usuario está limpio 🏆`);
+        let data = {};
+        if (fs.existsSync(path)) {
+            data = JSON.parse(fs.readFileSync(path, 'utf8'));
         }
 
-        let list = '';
+        const warns = data[user.id];
 
-        warns.forEach((w, i) => {
-            const date = new Date(w.date).toLocaleString();
-            list += `\n⚠️ **${i + 1}.** ${w.reason}\n📅 ${date}\n`;
+        if (!warns || warns.length === 0) {
+            return message.reply({
+                embeds: [
+                    new EmbedBuilder()
+                        .setTitle('📄 Warnings')
+                        .setDescription('Este usuario no tiene warns.')
+                        .setColor(0x00ff99)
+                ]
+            });
+        }
+
+        const list = warns.map((w, i) =>
+            `**${i + 1}.** ${w.reason}\n👮 Staff: <@${w.staff}>\n📅 <t:${Math.floor(new Date(w.date).getTime() / 1000)}:F>`
+        ).join('\n\n');
+
+        return message.reply({
+            embeds: [
+                new EmbedBuilder()
+                    .setTitle(`📄 Warns de ${user.tag}`)
+                    .setDescription(list)
+                    .setColor(0xffcc00)
+            ]
         });
-
-        const embed = new EmbedBuilder()
-            .setTitle(`📋 Warnings de ${user.username}`)
-            .setColor(0xffcc00)
-            .setDescription(list)
-            .setFooter({ text: `Total warns: ${warns.length}` })
-            .setTimestamp();
-
-        message.reply({ embeds: [embed] });
     }
 };

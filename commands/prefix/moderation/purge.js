@@ -1,29 +1,67 @@
-const { EmbedBuilder } = require('discord.js');
+const { PermissionsBitField, EmbedBuilder } = require('discord.js');
 
 module.exports = {
-    name: 'purges',
+    name: 'purge',
 
     async execute(message, args) {
 
-        if (!message.member.permissions.has('ManageMessages')) {
-            return message.reply('❌ No tienes permisos.');
+        const error = (msg) => ({
+            embeds: [
+                new EmbedBuilder()
+                    .setTitle('❌ Error')
+                    .setDescription(msg)
+                    .setColor(0xff0000)
+            ]
+        });
+
+        const success = (msg) => ({
+            embeds: [
+                new EmbedBuilder()
+                    .setTitle('🧹 Mensajes eliminados')
+                    .setDescription(msg)
+                    .setColor(0x00ff99)
+            ]
+        });
+
+        // 🛑 PERMISOS
+        if (!message.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
+            return message.reply(error('No tienes permisos para eliminar mensajes.'));
+        }
+
+        if (!message.guild.members.me.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
+            return message.reply(error('No tengo permisos para eliminar mensajes.'));
         }
 
         const amount = parseInt(args[0]);
-        if (!amount || amount > 100 || amount < 1) {
-            return message.reply('❌ Usa: `-clear 1-100`');
+
+        if (!amount || isNaN(amount)) {
+            return message.reply(error('Usa: `-purge 10`'));
         }
 
-        await message.channel.bulkDelete(amount, true);
+        if (amount < 1 || amount > 100) {
+            return message.reply(error('Solo puedes borrar entre 1 y 100 mensajes.'));
+        }
 
-        const embed = new EmbedBuilder()
-            .setTitle('🧹 Mensajes eliminados')
-            .setColor(0x00ffcc)
-            .setDescription(`Se eliminaron ${amount} mensajes`)
-            .setTimestamp();
+        try {
 
-        message.channel.send({ embeds: [embed] }).then(msg => {
-            setTimeout(() => msg.delete().catch(() => {}), 5000);
-        });
+            // 🧹 borrar mensajes
+            const deleted = await message.channel.bulkDelete(amount, true);
+
+            return message.channel.send({
+                embeds: [
+                    new EmbedBuilder()
+                        .setTitle('🧹 Purge completado')
+                        .setDescription(`Se eliminaron **${deleted.size} mensajes**`)
+                        .setColor(0x00ff99)
+                ]
+            }).then(msg => {
+                setTimeout(() => msg.delete().catch(() => {}), 5000);
+            });
+
+        } catch (err) {
+            console.log('❌ Error purge:', err);
+
+            return message.reply(error('No se pudieron eliminar los mensajes (pueden ser muy antiguos).'));
+        }
     }
 };
