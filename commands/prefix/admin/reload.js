@@ -1,96 +1,87 @@
 const fs = require('fs');
 const path = require('path');
-const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
-    name: 'reload',
+    name: 'reloadall',
 
-    async execute(message) {
+    async execute(message, args, client) {
 
         if (!message.member.permissions.has('Administrator')) {
-            return message.reply('❌ No tienes permisos para usar esto.');
+            return message.reply('❌ Sin permisos.');
         }
 
         try {
 
-            const client = message.client;
-
-            // 🧠 limpiar cache completo de comandos
-            function clearCache(dir) {
-
-                const files = fs.readdirSync(dir);
-
-                for (const file of files) {
-
-                    const fullPath = path.join(dir, file);
-
-                    if (fs.statSync(fullPath).isDirectory()) {
-                        clearCache(fullPath);
-                    } else if (file.endsWith('.js')) {
-
-                        delete require.cache[require.resolve(fullPath)];
-                    }
-                }
+            // 🧠 1. LIMPIAR CACHE COMPLETO DE NODE
+            for (const key in require.cache) {
+                delete require.cache[key];
             }
 
-            const commandsPath = path.join(global.basePath, 'commands');
-
-            clearCache(commandsPath);
-
-            // 🧹 limpiar colección
+            // 🧠 2. LIMPIAR COMANDOS
             client.commands.clear();
 
-            // 📦 recargar comandos
-            function loadCommands(dir) {
-
+            // 🧠 3. RECARGAR COMANDOS
+            const loadCommands = (dir) => {
                 const files = fs.readdirSync(dir);
-                let loaded = 0;
 
                 for (const file of files) {
-
                     const fullPath = path.join(dir, file);
 
                     if (fs.statSync(fullPath).isDirectory()) {
-                        loaded += loadCommands(fullPath);
-                        continue;
+                        loadCommands(fullPath);
+                    } else if (file.endsWith('.js')) {
+
+                        const command = require(fullPath);
+
+                        if (command?.name) {
+                            client.commands.set(command.name, command);
+                        }
                     }
-
-                    if (!file.endsWith('.js')) continue;
-
-                    const command = require(fullPath);
-
-                    if (!command || !command.name) continue;
-
-                    client.commands.set(command.name, command);
-
-                    loaded++;
                 }
+            };
 
-                return loaded;
+            loadCommands(path.join(__dirname, '../../commands'));
+
+            // 🧠 4. RECARGAR UTILS (forzar re-require)
+            const utilsPath = path.join(__dirname, '../../utils');
+
+            if (fs.existsSync(utilsPath)) {
+                const utilsFiles = fs.readdirSync(utilsPath);
+
+                for (const file of utilsFiles) {
+                    const full = path.join(utilsPath, file);
+
+                    if (file.endsWith('.js')) {
+                        delete require.cache[require.resolve(full)];
+                        require(full);
+                    }
+                }
             }
 
-            const total = loadCommands(commandsPath);
+            // 🧠 5. RECARGAR DATA (si existe carpeta)
+            const dataPath = path.join(__dirname, '../../data');
 
-            const embed = new EmbedBuilder()
-                .setTitle('🔄 Reload completado')
-                .setColor(0x00ff99)
-                .addFields(
-                    { name: '📦 Comandos recargados', value: `${total}`, inline: true }
-                )
-                .setTimestamp();
+            if (fs.existsSync(dataPath)) {
+                const dataFiles = fs.readdirSync(dataPath);
 
-            return message.reply({ embeds: [embed] });
+                for (const file of dataFiles) {
+                    const full = path.join(dataPath, file);
+
+                    if (file.endsWith('.js') || file.endsWith('.json')) {
+                        delete require.cache[require.resolve(full)];
+
+                        if (file.endsWith('.js')) {
+                            require(full);
+                        }
+                    }
+                }
+            }
+
+            return message.reply('✅ RELOAD TOTAL COMPLETADO (commands + utils + data + cache)');
 
         } catch (err) {
-
-            console.log(err);
-
-            const embed = new EmbedBuilder()
-                .setTitle('❌ Error en reload')
-                .setColor(0xff0000)
-                .setDescription('No se pudieron recargar los comandos correctamente');
-
-            return message.reply({ embeds: [embed] });
+            console.error(err);
+            return message.reply('❌ Error en reload total.');
         }
     }
 };
