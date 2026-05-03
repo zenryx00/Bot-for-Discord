@@ -1,0 +1,18 @@
+const log = require('../Utils/modlog');
+
+module.exports = {
+    name: 'messageUpdate',
+
+    async execute(oldMessage, newMessage) {
+
+        if (!oldMessage.guild) return;
+        if (oldMessage.content === newMessage.content) return;
+
+        await log(oldMessage.guild, {
+            title: '✏️ Mensaje editado',
+            color: 0xffcc00,
+            user: oldMessage.author,
+            content: `ANTES: ${oldMessage.content || 'vacío'}\nDESPUÉS: ${newMessage.content || 'vacío'}`
+        });
+    }
+};

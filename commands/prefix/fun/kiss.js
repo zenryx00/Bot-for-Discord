@@ -51,7 +51,7 @@ module.exports = {
             if (target && target.id !== message.author.id) {
                 const button = new ButtonBuilder()
                     .setCustomId(`return_kiss_${message.author.id}_${target.id}`)
-                    .setLabel('↩️ Devolver')
+                    .setLabel('Devolver beso')
                     .setStyle(ButtonStyle.Primary);
 
                 const row = new ActionRowBuilder().addComponents(button);
