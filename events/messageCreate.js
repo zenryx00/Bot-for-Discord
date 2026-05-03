@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 const fetch = require("node-fetch");
-const { askAI } = require(".Perukistan/utils/aiManager");
 
 // 📂 cargar JSON
 const configPath = path.resolve(__dirname, "..", "Data", "ai_config.json");
