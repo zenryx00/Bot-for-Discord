@@ -2,44 +2,39 @@ const { REST, Routes } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 
-// 🔐 VARIABLES DE ENTORNO (Railway)
-const token = process.env.TOKEN;
-const clientId = process.env.CLIENT_ID;
+async function deployCommands() {
 
-// 📂 carpeta de comandos
-const commandsPath = path.join(__dirname, 'commands', 'slash');
+    const token = process.env.TOKEN;
+    const clientId = process.env.CLIENT_ID;
 
-const commands = [];
+    // 🔥 USA TU RUTA REAL
+    const commandsPath = path.join(__dirname, 'commands', 'slash');
 
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+    const commands = [];
 
-for (const file of commandFiles) {
-    const command = require(path.join(commandsPath, file));
+    if (fs.existsSync(commandsPath)) {
 
-    if (command.data) {
-        commands.push(command.data.toJSON());
+        const files = fs.readdirSync(commandsPath).filter(f => f.endsWith('.js'));
+
+        for (const file of files) {
+            const command = require(path.join(commandsPath, file));
+
+            if (command.data) {
+                commands.push(command.data.toJSON());
+            }
+        }
+    } else {
+        console.log('❌ No existe carpeta:', commandsPath);
     }
+
+    const rest = new REST({ version: '10' }).setToken(token);
+
+    await rest.put(
+        Routes.applicationCommands(clientId),
+        { body: commands }
+    );
+
+    console.log(`📡 Slash commands registrados: ${commands.length}`);
 }
 
-const rest = new REST({ version: '10' }).setToken(token);
-
-(async () => {
-    try {
-
-        if (!token || !clientId) {
-            throw new Error('❌ Faltan variables de entorno TOKEN o CLIENT_ID');
-        }
-
-        console.log('🔄 Registrando slash commands...');
-
-        await rest.put(
-            Routes.applicationCommands(clientId),
-            { body: commands }
-        );
-
-        console.log(`✅ ${commands.length} comandos registrados`);
-
-    } catch (error) {
-        console.error('❌ Error deploy:', error);
-    }
-})();
+module.exports = deployCommands;
