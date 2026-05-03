@@ -3,11 +3,6 @@ const path = require("path");
 const fetch = require("node-fetch");
 const { askAI } = require(".Perukistan/utils/aiManager");
 
-// dentro de tu handler
-const response = await askAI(content);
-
-message.reply(response);
-
 // 📂 cargar JSON
 const configPath = path.resolve(__dirname, "..", "Data", "ai_config.json");
 let aiConfig = JSON.parse(fs.readFileSync(configPath, "utf-8"));
