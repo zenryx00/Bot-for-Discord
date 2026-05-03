@@ -44,7 +44,7 @@ module.exports = {
             // 📦 embed base
             const embed = new EmbedBuilder()
                 .setTitle(`${message.author.username} esta llorando`)
-                .setColor(0xFFD700)
+                .setColor(21255c)
                 .setFooter({ text: `Solicitado por ${message.author.username}` })
                 .setTimestamp();
 
