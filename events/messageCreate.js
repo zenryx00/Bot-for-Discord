@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const fetch = require("node-fetch");
-const { askAI } = require("../utils/aiManager");
+const { askAI } = require("./utils/aiManager");
 
 // dentro de tu handler
 const response = await askAI(content);
