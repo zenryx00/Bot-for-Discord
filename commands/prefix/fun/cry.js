@@ -44,7 +44,7 @@ module.exports = {
             // 📦 embed base
             const embed = new EmbedBuilder()
                 .setTitle(`${message.author.username} esta llorando`)
-                .setColor("21255c")
+                .setColor(0xFFD700)
                 .setFooter({ text: `Solicitado por ${message.author.username}` })
                 .setTimestamp();
 
@@ -53,6 +53,9 @@ module.exports = {
                 embed.setImage(gif);
                 return message.reply({ embeds: [embed] });
             }
+
+            // 💀 SI TODO FALLA → imagen local
+            const filePath = path.join(global.basePath, 'utils', 'banana.gif');
 
             const attachment = new AttachmentBuilder(filePath, {
                 name: 'banana.gif'
