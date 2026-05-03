@@ -46,6 +46,7 @@ client.commands = new Collection();
 // =======================
 const commandsPath = path.join(__dirname, 'commands');
 const eventsPath = path.join(__dirname, 'events');
+const slashPath = path.join(__dirname, 'commands', 'slash');
 
 // =======================
 // 📦 LOAD COMMANDS
@@ -119,24 +120,34 @@ function loadEvents(dir) {
 // =======================
 // 🚀 DEPLOY SLASH COMMANDS
 // =======================
-const slashPath = path.join(__dirname, 'commands', 'slash');
+async function deployCommands() {
+    const slashCommands = [];
 
-if (fs.existsSync(slashPath)) {
-    const slashFiles = fs.readdirSync(slashPath).filter(f => f.endsWith('.js'));
+    if (!fs.existsSync(slashPath)) return;
 
-    for (const file of slashFiles) {
+    const files = fs.readdirSync(slashPath).filter(f => f.endsWith('.js'));
+
+    for (const file of files) {
         const command = require(path.join(slashPath, file));
 
         if (command.data) {
+            slashCommands.push(command.data.toJSON());
             client.commands.set(command.data.name, command);
         }
     }
 
-    console.log(`⚡ Slash cargados: ${slashFiles.length}`);
+    const { REST, Routes } = require('discord.js');
+
+    const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
+
+    await rest.put(
+        Routes.applicationCommands(client.user.id),
+        { body: slashCommands }
+    );
 }
 
 // =======================
-// 🤖 READY
+// 🚀 READY
 // =======================
 client.once('ready', async () => {
 
@@ -149,7 +160,7 @@ client.once('ready', async () => {
 
     console.log(`📦 CMD cargados: ${client.commands.size}`);
 
-    // 🚀 SLASH DEPLOY
+    // 🚀 SLASH DEPLOY FIXED
     try {
         await deployCommands();
         console.log('📡 Slash commands sincronizados');
