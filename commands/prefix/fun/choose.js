@@ -19,6 +19,7 @@ module.exports = {
                     .setTitle('🤖 Elección')
                     .setDescription(`Yo elijo: **${choice.trim()}**`)
                     .setColor(0x5865f2)
+                    .setFooter({ text: `Solicitado por ${message.author.username}` })
             ]
         });
     }

@@ -24,6 +24,7 @@ module.exports = {
                 { name: 'IQ', value: `${iq}` },
                 { name: 'Nivel', value: nivel }
             )
+            .setFooter({ text: `Solicitado por ${message.author.username}` })
             .setTimestamp();
 
         message.reply({ embeds: [embed] });

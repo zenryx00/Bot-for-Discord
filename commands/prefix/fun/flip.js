@@ -13,6 +13,7 @@ module.exports = {
                     .setTitle('🪙 Coin Flip')
                     .setDescription(`Resultado: **${result}**`)
                     .setColor(0xffd700)
+                    .setFooter({ text: `Solicitado por ${message.author.username}` })
             ]
         });
     }

@@ -45,7 +45,7 @@ module.exports = {
             .addFields(
                 { name: '📂 Categoría', value: chosenCategory, inline: true }
             )
-            .setFooter({ text: 'Usa -fact ciencia/animales/espacio' })
+            .setFooter({ text: `Solicitado por ${message.author.username}` })
             .setTimestamp();
 
         message.reply({ embeds: [embed] });

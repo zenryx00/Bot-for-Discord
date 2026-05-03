@@ -31,6 +31,7 @@ module.exports = {
                 { name: 'Pregunta', value: args.join(' ') },
                 { name: 'Respuesta', value: respuesta }
             )
+            .setFooter({ text: `Solicitado por ${message.author.username}` })
             .setTimestamp();
 
         message.reply({ embeds: [embed] });
