@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 module.exports = {
-    name: 'reloadall',
+    name: 'reload',
 
     async execute(message, args, client) {
 
