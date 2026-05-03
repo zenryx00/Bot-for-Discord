@@ -8,7 +8,7 @@ const config = require('./Data/config.json');
 // 🌐 base path global
 global.basePath = __dirname;
 
-// 🧠 INIT UTILS SEGURAS
+// 🧠 UTILS
 global.utils = {};
 
 function loadUtils() {
@@ -27,11 +27,12 @@ function loadUtils() {
     }
 }
 
-// 🤖 client
+// 🤖 CLIENT
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.GuildMembers,
         GatewayIntentBits.MessageContent
     ],
     allowedMentions: { parse: ['users', 'roles'], repliedUser: false }
@@ -40,7 +41,9 @@ const client = new Client({
 // 📦 comandos
 client.commands = new Collection();
 
-// 📁 paths
+// =======================
+// 📁 PATHS
+// =======================
 const commandsPath = path.join(__dirname, 'commands');
 const eventsPath = path.join(__dirname, 'events');
 
@@ -49,10 +52,7 @@ const eventsPath = path.join(__dirname, 'events');
 // =======================
 function loadCommands(dir) {
 
-    if (!fs.existsSync(dir)) {
-        console.log(`❌ Carpeta no encontrada: ${dir}`);
-        return;
-    }
+    if (!fs.existsSync(dir)) return;
 
     const files = fs.readdirSync(dir);
 
@@ -74,31 +74,24 @@ function loadCommands(dir) {
 
             const command = require(fullPath);
 
-            if (!command || !command.name || !command.execute) {
-                console.log(`❌ Comando inválido: ${file}`);
-                continue;
-            }
+            if (!command || !command.name || !command.execute) continue;
 
             client.commands.set(command.name, command);
 
-            console.log(`✅ Cargado: ${command.name}`);
+            console.log(`✅ CMD: ${command.name}`);
 
         } catch (err) {
-            console.log(`❌ ERROR en ${file}`);
-            console.log(err);
+            console.log(`❌ ERROR CMD ${file}`, err.message);
         }
     }
 }
 
 // =======================
-// ⚡ LOAD EVENTS (AQUÍ VA LA IA)
+// ⚡ LOAD EVENTS
 // =======================
 function loadEvents(dir) {
 
-    if (!fs.existsSync(dir)) {
-        console.log(`⚠️ No hay carpeta de eventos`);
-        return;
-    }
+    if (!fs.existsSync(dir)) return;
 
     const files = fs.readdirSync(dir).filter(f => f.endsWith('.js'));
 
@@ -111,39 +104,48 @@ function loadEvents(dir) {
 
             const event = require(fullPath);
 
-            if (typeof event !== 'function') {
-                console.log(`❌ Evento inválido: ${file}`);
-                continue;
-            }
+            if (typeof event !== 'function') continue;
 
-            event(client); // 👈 aquí se ejecuta messageCreate de IA
+            event(client);
 
-            console.log(`⚡ Evento cargado: ${file}`);
+            console.log(`⚡ EVT: ${file}`);
 
         } catch (err) {
-            console.log(`❌ ERROR en evento ${file}`);
-            console.log(err);
+            console.log(`❌ ERROR EVT ${file}`, err.message);
         }
     }
 }
 
 // =======================
-// 🚀 READY
+// 🚀 DEPLOY SLASH COMMANDS
 // =======================
-client.once('ready', () => {
+const deployCommands = require('./deploy-commands');
 
-    console.log(`👤 Bot activo como ${client.user.tag}`);
-    console.log(`📌 Prefijo: ${config.prefix}`);
+// =======================
+// 🤖 READY
+// =======================
+client.once('ready', async () => {
+
+    console.log(`🤖 Bot listo como ${client.user.tag}`);
+    console.log(`📌 Prefix: ${config.prefix}`);
 
     loadUtils();
     loadCommands(commandsPath);
-    loadEvents(eventsPath); // 👈 IMPORTANTE
+    loadEvents(eventsPath);
 
-    console.log(`📦 Comandos cargados: ${client.commands.size}`);
+    console.log(`📦 CMD cargados: ${client.commands.size}`);
+
+    // 🚀 SLASH DEPLOY
+    try {
+        await deployCommands();
+        console.log('📡 Slash commands sincronizados');
+    } catch (err) {
+        console.log('❌ Error deploy:', err.message);
+    }
 });
 
 // =======================
-// 💬 HANDLER PREFIX (NO SE TOCA)
+// 💬 PREFIX HANDLER
 // =======================
 client.on('messageCreate', async message => {
 
@@ -177,7 +179,7 @@ client.on('messageCreate', async message => {
         }
 
     } catch (err) {
-        console.log(`❌ Error en ${commandName}:`, err.message);
+        console.log(`❌ Error ${commandName}:`, err.message);
 
         try {
             await message.reply('❌ Error ejecutando comando');
@@ -185,7 +187,44 @@ client.on('messageCreate', async message => {
     }
 });
 
+// =======================
+// ⚡ SLASH HANDLER
+// =======================
+client.on('interactionCreate', async interaction => {
+
+    if (!interaction.isChatInputCommand()) return;
+
+    const command = client.commands.get(interaction.commandName);
+
+    if (!command) {
+        return interaction.reply({
+            content: '❌ Comando no encontrado',
+            ephemeral: true
+        });
+    }
+
+    try {
+        await command.execute(interaction, client);
+    } catch (err) {
+        console.log('❌ Slash error:', err.message);
+
+        if (interaction.replied || interaction.deferred) {
+            await interaction.followUp({
+                content: '❌ Error ejecutando comando',
+                ephemeral: true
+            });
+        } else {
+            await interaction.reply({
+                content: '❌ Error ejecutando comando',
+                ephemeral: true
+            });
+        }
+    }
+});
+
+// =======================
 // 🛡️ ANTI CRASH
+// =======================
 process.on('unhandledRejection', err => {
     console.log('⚠️ Unhandled Rejection:', err);
 });
@@ -194,5 +233,7 @@ process.on('uncaughtException', err => {
     console.log('⚠️ Uncaught Exception:', err);
 });
 
+// =======================
 // 🚀 LOGIN
+// =======================
 client.login(process.env.TOKEN);
