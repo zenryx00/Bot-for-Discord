@@ -11,6 +11,20 @@ module.exports = {
             const target =
                 message.mentions.users.first() ||
                 message.author;
+
+            const size = Math.floor(Math.random() * 31);
+
+            let comment;
+
+            if (size === 0) comment = 'Desapareció… 😔';
+            else if (size <= 5) comment = 'Pequeña pero con actitud 😎';
+            else if (size <= 10) comment = 'Promedio 👀';
+            else if (size <= 20) comment = 'Respetable 😳';
+            else if (size <= 25) comment = 'Grande ⚠️';
+            else comment = 'Nivel legendario 🗿🍌';
+
+            let gif = null;
+
             // 🌸 API 1
             try {
                 const res = await fetch('https://api.waifu.pics/sfw/cry');
@@ -30,7 +44,7 @@ module.exports = {
             // 📦 embed base
             const embed = new EmbedBuilder()
                 .setTitle(`${message.author.username} esta llorando`)
-                .setColor(0xFFD700) 
+                .setColor(0xFFD700)
                 .setFooter({ text: `Solicitado por ${message.author.username}` })
                 .setTimestamp();
 
