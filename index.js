@@ -8,7 +8,7 @@ const config = require('./Data/config.json');
 // 🌐 base path global
 global.basePath = __dirname;
 
-// 🧠 INIT UTILS SEGURAS (evita crashes)
+// 🧠 INIT UTILS SEGURAS
 global.utils = {};
 
 function loadUtils() {
@@ -40,10 +40,13 @@ const client = new Client({
 // 📦 comandos
 client.commands = new Collection();
 
-// 📁 comandos path
+// 📁 paths
 const commandsPath = path.join(__dirname, 'commands');
+const eventsPath = path.join(__dirname, 'events');
 
-// 🧠 loader recursivo
+// =======================
+// 📦 LOAD COMMANDS
+// =======================
 function loadCommands(dir) {
 
     if (!fs.existsSync(dir)) {
@@ -87,19 +90,61 @@ function loadCommands(dir) {
     }
 }
 
+// =======================
+// ⚡ LOAD EVENTS (AQUÍ VA LA IA)
+// =======================
+function loadEvents(dir) {
+
+    if (!fs.existsSync(dir)) {
+        console.log(`⚠️ No hay carpeta de eventos`);
+        return;
+    }
+
+    const files = fs.readdirSync(dir).filter(f => f.endsWith('.js'));
+
+    for (const file of files) {
+
+        const fullPath = path.join(dir, file);
+
+        try {
+            delete require.cache[require.resolve(fullPath)];
+
+            const event = require(fullPath);
+
+            if (typeof event !== 'function') {
+                console.log(`❌ Evento inválido: ${file}`);
+                continue;
+            }
+
+            event(client); // 👈 aquí se ejecuta messageCreate de IA
+
+            console.log(`⚡ Evento cargado: ${file}`);
+
+        } catch (err) {
+            console.log(`❌ ERROR en evento ${file}`);
+            console.log(err);
+        }
+    }
+}
+
+// =======================
 // 🚀 READY
+// =======================
 client.once('ready', () => {
 
     console.log(`👤 Bot activo como ${client.user.tag}`);
     console.log(`📌 Prefijo: ${config.prefix}`);
 
-    loadUtils(); // ⚠️ IMPORTANTE: primero utils
-    loadCommands(commandsPath); // luego comandos
+    loadUtils();
+    loadCommands(commandsPath);
+    loadEvents(eventsPath); // 👈 IMPORTANTE
 
     console.log(`📦 Comandos cargados: ${client.commands.size}`);
 });
 
-// 💬 HANDLER PREFIX
+// =======================
+// 💬 HANDLER PREFIX (NO SE TOCA)
+// =======================
 client.on('messageCreate', async message => {
 
     if (message.author.bot || !message.guild) return;
