@@ -1,22 +1,87 @@
-const { EmbedBuilder } = require('discord.js');
-const { getActionGif } = require('../../utils/gifs');
+const { EmbedBuilder, AttachmentBuilder } = require('discord.js');
+const path = require('path');
 
 module.exports = {
     name: 'cry',
 
-    async execute(message) {
+    async execute(message, args) {
 
-        const user = message.mentions.users.first() || message.author;
+        try {
 
-        const gif = await getActionGif('cry', 'https://media.tenor.com/cry.gif');
+            const target =
+                message.mentions.users.first() ||
+                message.author;
 
-        message.reply({
-            embeds: [
-                new EmbedBuilder()
-                    .setTitle(`${user.username} está llorando 😢`)
-                    .setImage(gif)
-                    .setColor(0x3498db)
-            ]
-        });
+            const size = Math.floor(Math.random() * 31);
+
+            let comment;
+
+            if (size === 0) comment = 'Desapareció… 😔';
+            else if (size <= 5) comment = 'Pequeña pero con actitud 😎';
+            else if (size <= 10) comment = 'Promedio 👀';
+            else if (size <= 20) comment = 'Respetable 😳';
+            else if (size <= 25) comment = 'Grande ⚠️';
+            else comment = 'Nivel legendario 🗿🍌';
+
+            let gif = null;
+
+            // 🌸 API 1
+            try {
+                const res = await fetch('https://api.waifu.pics/sfw/cry');
+                const data = await res.json();
+                gif = data.url;
+            } catch {}
+
+            // 🌸 API 2 (fallback)
+            if (!gif) {
+                try {
+                    const res = await fetch('https://nekos.best/api/v2/cry');
+                    const data = await res.json();
+                    gif = data.results[0].url;
+                } catch {}
+            }
+
+            // 📦 embed base
+            const embed = new EmbedBuilder()
+                .setTitle('🍌 Medidor de Banana')
+                .setColor(0xFFD700)
+                .setDescription(
+                    `**${target.username}** tiene una banana de:\n\n🍌 **${size} cm**\n\n${comment}`
+                )
+                .setFooter({ text: `Solicitado por ${message.author.username}` })
+                .setTimestamp();
+
+            // 🖼️ SI HAY GIF → usarlo
+            if (gif) {
+                embed.setImage(gif);
+                return message.reply({ embeds: [embed] });
+            }
+
+            // 💀 SI TODO FALLA → imagen local
+            const filePath = path.join(global.basePath, 'utils', 'banana.gif');
+
+            const attachment = new AttachmentBuilder(filePath, {
+                name: 'banana.gif'
+            });
+
+            embed.setImage('attachment://banana.gif');
+
+            return message.reply({
+                embeds: [embed],
+                files: [attachment]
+            });
+
+        } catch (err) {
+            console.log('❌ Error cry:', err);
+
+            return message.reply({
+                embeds: [
+                    new EmbedBuilder()
+                        .setTitle('❌ Error')
+                        .setColor(0xff0000)
+                        .setDescription('Error crítico ejecutando el comando.')
+                ]
+            });
+        }
     }
 };
