@@ -119,7 +119,21 @@ function loadEvents(dir) {
 // =======================
 // 🚀 DEPLOY SLASH COMMANDS
 // =======================
-const deployCommands = require('./deploy-commands');
+const slashPath = path.join(__dirname, 'commands', 'slash');
+
+if (fs.existsSync(slashPath)) {
+    const slashFiles = fs.readdirSync(slashPath).filter(f => f.endsWith('.js'));
+
+    for (const file of slashFiles) {
+        const command = require(path.join(slashPath, file));
+
+        if (command.data) {
+            client.commands.set(command.data.name, command);
+        }
+    }
+
+    console.log(`⚡ Slash cargados: ${slashFiles.length}`);
+}
 
 // =======================
 // 🤖 READY

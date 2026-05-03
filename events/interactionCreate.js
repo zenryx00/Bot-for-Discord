@@ -5,7 +5,7 @@ module.exports = {
 
         try {
 
-            // 🚫 Ignorar si no es slash command
+            // 🚫 Solo slash commands
             if (!interaction.isChatInputCommand()) return;
 
             // 🔎 buscar comando
@@ -18,23 +18,38 @@ module.exports = {
                 });
             }
 
-            // ⚙️ ejecutar comando
-            await command.execute(interaction, client);
+            // ⚡ ejecutar con manejo de timeout básico (evita congelamientos)
+            const result = await Promise.race([
+                command.execute(interaction, client),
+                new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Timeout Slash Command')), 10000)
+                )
+            ]);
+
+            return result;
 
         } catch (err) {
+
             console.log('❌ Error en interactionCreate:', err);
 
-            // ⚠️ evitar crash de Discord
-            if (interaction.replied || interaction.deferred) {
-                await interaction.followUp({
+            try {
+
+                // ⚠️ si ya respondió
+                if (interaction.replied || interaction.deferred) {
+                    return await interaction.followUp({
+                        content: '❌ Error ejecutando el comando.',
+                        ephemeral: true
+                    });
+                }
+
+                // ⚠️ primera respuesta
+                return await interaction.reply({
                     content: '❌ Error ejecutando el comando.',
                     ephemeral: true
                 });
-            } else {
-                await interaction.reply({
-                    content: '❌ Error ejecutando el comando.',
-                    ephemeral: true
-                });
+
+            } catch (e) {
+                console.log('❌ Error enviando respuesta de error:', e);
             }
         }
     }
