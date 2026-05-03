@@ -7,7 +7,7 @@ const token = process.env.TOKEN;
 const clientId = process.env.CLIENT_ID;
 
 // 📂 carpeta de comandos
-const commandsPath = path.join(__dirname, 'Perukistan', 'Commands', 'slash');
+const commandsPath = path.join(__dirname, 'commands', 'slash');
 
 const commands = [];
 
