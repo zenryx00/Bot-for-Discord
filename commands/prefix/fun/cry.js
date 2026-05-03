@@ -43,11 +43,8 @@ module.exports = {
 
             // 📦 embed base
             const embed = new EmbedBuilder()
-                .setTitle('🍌 Medidor de Banana')
+                .setTitle('${message.author.username} esta llorando')
                 .setColor(0xFFD700)
-                .setDescription(
-                    `**${target.username}** tiene una banana de:\n\n🍌 **${size} cm**\n\n${comment}`
-                )
                 .setFooter({ text: `Solicitado por ${message.author.username}` })
                 .setTimestamp();
 
