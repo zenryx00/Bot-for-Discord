@@ -9,7 +9,7 @@ let aiConfig = JSON.parse(fs.readFileSync(configPath, "utf-8"));
 // 🧠 memoria por usuario
 const memory = new Map();
 
-const API_KEY = "TU_API_KEY_AQUI";
+const API_KEY = "AIzaSyCPr1J4lQ8C2vt63pg8VM2P82IUXDL8sas";
 
 // 🔄 obtener config del servidor
 function getConfig(guildId) {
@@ -43,7 +43,7 @@ ${serverConfig.rules}
         }));
 
         const res = await fetch(
-            `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=AIzaSyA5nw2WJ-v4hes5ohKDUs-9Df-bjWZvKu4`,
+            `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=AIzaSyCPr1J4lQ8C2vt63pg8VM2P82IUXDL8sas`,
             {
                 method: "POST",
                 headers: {
