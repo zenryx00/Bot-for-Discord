@@ -20,7 +20,7 @@ function fallbackAI(prompt) {
 async function askAI(prompt) {
     try {
         const res = await fetch(
-            `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=AIzaSyDoCubvkiiTTLuhC0hgqn8zt4WddW48hdM`,
+            `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=TU_API_KEY_AQUI`,
             {
                 method: "POST",
                 headers: {
@@ -29,10 +29,7 @@ async function askAI(prompt) {
                 body: JSON.stringify({
                     contents: [
                         {
-                            parts: [
-                                { text: "Eres un bot de Discord amigable, respondes claro, útil y no muy largo." },
-                                { text: prompt }
-                            ]
+                            parts: [{ text: prompt }]
                         }
                     ]
                 })
@@ -41,18 +38,26 @@ async function askAI(prompt) {
 
         const data = await res.json();
 
+        // 🔍 DEBUG REAL
+        if (!res.ok) {
+            console.error("API ERROR:", data);
+            return `❌ ${data.error?.message || "Error desconocido"}`;
+        }
+
         const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-        if (!text) return fallbackAI(prompt);
+        if (!text) {
+            console.error("SIN RESPUESTA:", data);
+            return "⚠️ La IA no devolvió texto";
+        }
 
         return text;
 
     } catch (err) {
-        console.error("AI Error:", err);
-        return fallbackAI(prompt);
+        console.error("FETCH ERROR:", err);
+        return "💥 Error conectando con la IA";
     }
 }
-
 module.exports = {
     name: 'ai',
 
