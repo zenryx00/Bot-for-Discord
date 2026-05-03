@@ -3,7 +3,7 @@ const path = require("path");
 const fetch = require("node-fetch");
 
 // 📂 cargar JSON
-const configPath = path.join(__dirname, "../data/ai_config.json");
+const configPath = path.resolve(__dirname, "..", "Data", "ai_config.json");
 let aiConfig = JSON.parse(fs.readFileSync(configPath, "utf-8"));
 
 // 🧠 memoria por usuario
