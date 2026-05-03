@@ -2,7 +2,8 @@ const { PermissionsBitField, EmbedBuilder } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 
-const filePath = path.join(__dirname, '../Data/guilds.json');
+// 📂 raíz del proyecto
+const filePath = path.join(process.cwd(), 'Data', 'guilds.json');
 
 module.exports = {
     name: 'setlogs',
@@ -11,9 +12,9 @@ module.exports = {
 
         try {
 
-            // 🔒 permiso admin
+            // 🔒 permisos
             if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
-                return message.reply('❌ Necesitas permisos de administrador.');
+                return message.reply('❌ Necesitas ser administrador.');
             }
 
             const channel = message.mentions.channels.first();
@@ -29,20 +30,21 @@ module.exports = {
                 db = JSON.parse(fs.readFileSync(filePath, 'utf8'));
             }
 
-            // 🧠 crear guild si no existe
+            // 🧠 asegurar servidor
             if (!db[message.guild.id]) {
                 db[message.guild.id] = {};
             }
 
-            // 💾 guardar canal
+            // 🔁 siempre reemplaza el anterior
             db[message.guild.id].modlogChannel = channel.id;
 
+            // 💾 guardar
             fs.writeFileSync(filePath, JSON.stringify(db, null, 2));
 
-            // ✅ confirmación embed
+            // ✅ embed confirmación
             const embed = new EmbedBuilder()
-                .setTitle('📊 Logs configurados')
-                .setDescription(`Canal de logs establecido en ${channel}`)
+                .setTitle('📊 Mod-Logs configurados')
+                .setDescription(`Canal de logs actualizado a ${channel}\n\n⚠️ El anterior fue reemplazado`)
                 .setColor(0x00ff00)
                 .setTimestamp();
 
@@ -50,7 +52,7 @@ module.exports = {
 
         } catch (err) {
             console.log('❌ Error setlogs:', err);
-            return message.reply('❌ Error configurando los logs.');
+            return message.reply('❌ Error configurando logs.');
         }
     }
 };
