@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const { getNekoGif } = require('../../utils/gifs');
+const { getNekoGif } = require('../../utils/gifs.js');
 
 module.exports = {
     name: 'neko',

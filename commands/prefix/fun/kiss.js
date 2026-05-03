@@ -1,5 +1,5 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const { getActionGif } = require('../../utils/gifs');
+const { getActionGif } = require('../../utils/gifs.js');
 
 module.exports = {
     name: 'kiss',
