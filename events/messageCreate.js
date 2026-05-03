@@ -57,7 +57,7 @@ ${serverConfig.rules}
 
         const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-        if (!reply) return "⚠️ No pude responder eso";
+        if (!reply) return "⚠️ Error o Limite alcanzado";
 
         history.push({ role: "model", text: reply });
 
