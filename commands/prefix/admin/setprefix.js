@@ -18,7 +18,7 @@ module.exports = {
 
         try {
             const configPath = './Data/config.json';
-            const config = require('../../Data/config.json');
+            const config = require('./Data/config.json');
 
             config.prefix = newPrefix;
 

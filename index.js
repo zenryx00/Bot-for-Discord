@@ -175,11 +175,11 @@ client.once('ready', async () => {
     const { ActivityType } = require('discord.js');
 
     const estados = [
-        { name: "🌙 **Mirando anime**", type: ActivityType.Watching },
-        { name: ":zap: Ultiza `-help`! ", type: ActivityType.Playing },
-        { name: ":slight_smile: Siendo Feliz", type: ActivityType.Playing },
+        { name: "🌙 Mirando anime", type: ActivityType.Watching },
+        { name: "⚡ -help! ", type: ActivityType.Playing },
+        { name: "🙂 Siendo Feliz", type: ActivityType.Playing },
         { name: "🎵 Escuchando música", type: ActivityType.Listening },
-        { name: `👥 ${client.guilds.cache.size} servidores`, type: ActivityType.Watching }
+        { name: `En ${client.guilds.cache.size} servidores`, type: ActivityType.Watching }
     ];
 
     let i = 0;
