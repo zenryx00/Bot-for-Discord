@@ -167,6 +167,35 @@ client.once('ready', async () => {
     } catch (err) {
         console.log('❌ Error deploy:', err.message);
     }
+
+    // =======================
+    // 🌙 SISTEMA DE ESTADOS
+    // =======================
+
+    const { ActivityType } = require('discord.js');
+
+    const estados = [
+        { name: "🌙 Mirando anime", type: ActivityType.Watching },
+        { name: "🎮 Jugando Roblox", type: ActivityType.Playing },
+        { name: "💻 Programando bots", type: ActivityType.Playing },
+        { name: "🎵 Escuchando música", type: ActivityType.Listening },
+        { name: "👀 Observándote...", type: ActivityType.Watching }
+    ];
+
+    let i = 0;
+
+    setInterval(() => {
+        const estado = estados[i];
+
+        client.user.setActivity(estado.name, {
+            type: estado.type,
+            url: estado.url
+        });
+
+        i++;
+        if (i >= estados.length) i = 0;
+
+    }, 12000); // ⏱ 12 segundos
 });
 
 // =======================
