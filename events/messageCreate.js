@@ -43,7 +43,7 @@ ${serverConfig.rules}
         }));
 
         const res = await fetch(
-            `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash-lite:generateContent?key=AIzaSyAt4C7qYN4GzUPpCGxS29PTbT8IknyVHFc`,
+            `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-lite:generateContent?key=AIzaSyAt4C7qYN4GzUPpCGxS29PTbT8IknyVHFc`,
             {
                 method: "POST",
                 headers: {
