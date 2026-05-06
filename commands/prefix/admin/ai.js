@@ -20,7 +20,7 @@ function fallbackAI(prompt) {
 async function askAI(prompt) {
     try {
         const res = await fetch(
-            `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash-lite:generateContent?key=AIzaSyD_lGf0uFiv4Iv0O1S4T_aIWxpdR45yJc8`,
+            `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash-lite:generateContent?key=AIzaSyAt4C7qYN4GzUPpCGxS29PTbT8IknyVHFc`,
             {
                 method: "POST",
                 headers: {
