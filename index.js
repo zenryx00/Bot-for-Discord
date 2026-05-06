@@ -176,10 +176,10 @@ client.once('ready', async () => {
 
     const estados = [
         { name: "🌙 Mirando anime", type: ActivityType.Watching },
-        { name: "🎮 Jugando Roblox", type: ActivityType.Playing },
-        { name: "💻 Programando bots", type: ActivityType.Playing },
+        { name: "<:happy:1501389715243274291> Ultiza -help! ", type: ActivityType.Playing },
+        { name: " Siendo Feliz", type: ActivityType.Playing },
         { name: "🎵 Escuchando música", type: ActivityType.Listening },
-        { name: "👀 Observándote...", type: ActivityType.Watching }
+        { name: `👥 ${client.guilds.cache.size} servidores`, type: ActivityType.Watching }
     ];
 
     let i = 0;
@@ -197,6 +197,10 @@ client.once('ready', async () => {
 
     }, 12000); // ⏱ 12 segundos
 });
+
+// Estados del bot
+const estados = ['online', 'idle']; // puedes quitar o agregar
+
 
 // =======================
 // 💬 PREFIX HANDLER
