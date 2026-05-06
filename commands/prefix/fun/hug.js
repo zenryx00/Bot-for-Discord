@@ -13,7 +13,13 @@ module.exports = {
 
         try {
 
-            const target = message.mentions.users.first();
+            const targetUser = message.mentions.users.first();
+            const targetMember = message.mentions.members.first();
+
+            // 👤 Nombres con nickname
+            const authorName = message.member?.displayName || message.author.username;
+            const targetName = targetMember?.displayName || targetUser?.username || 'al aire';
+
             let gif = null;
 
             // 🌸 API 1
@@ -39,18 +45,18 @@ module.exports = {
             }
 
             const embed = new EmbedBuilder()
-                .setTitle(`${message.author.username} abraza a ${target ? target.username : 'al aire'}`)
+                .setTitle(`${authorName} abrazo a ${targetName}`)
                 .setColor(0x162659)
                 .setImage(gif)
-                .setFooter({ text: `Solicitado por ${message.author.username}` })
+                .setFooter({ text: `Solicitado por ${authorName}` })
                 .setTimestamp();
 
-            // 🎯 Botón devolver (solo si hay target)
+            // 🎯 Botón devolver
             let components = [];
 
-            if (target && target.id !== message.author.id) {
+            if (targetUser && targetUser.id !== message.author.id) {
                 const button = new ButtonBuilder()
-                    .setCustomId(`return_hug_${message.author.id}_${target.id}`)
+                    .setCustomId(`return_kiss_${message.author.id}_${targetUser.id}`)
                     .setLabel('Devolver abrazo')
                     .setStyle(ButtonStyle.Primary);
 

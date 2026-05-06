@@ -10,7 +10,7 @@ module.exports = {
         const avatarURL = user.displayAvatarURL({ size: 1024, dynamic: true });
 
         const embed = new EmbedBuilder()
-            .setTitle(`🖼️ Avatar de ${user.username}`)
+            .setTitle(`🖼️ Avatar de ${user.username} <:Omg:1501396849532342495> `)
             .setImage(avatarURL)
             .setColor(0x00ff99)
             .setFooter({ text: 'Haz click para abrir en el navegador' });

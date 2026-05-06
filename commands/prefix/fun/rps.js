@@ -10,7 +10,7 @@ module.exports = {
         const user = args[0];
 
         if (!user || !choices.includes(user.toLowerCase())) {
-            return message.reply('❌ Usa: -rps piedra|papel|tijera');
+            return message.reply('❌ Usa: -rps piedra | papel | tijera');
         }
 
         const bot = choices[Math.floor(Math.random() * choices.length)];
@@ -22,7 +22,7 @@ module.exports = {
             (user === 'piedra' && bot === 'tijera') ||
             (user === 'papel' && bot === 'piedra') ||
             (user === 'tijera' && bot === 'papel')
-        ) result = 'Ganaste 🎉';
+        ) result = 'Ganaste <:Omg:1501396849532342495>';
         else result = 'Perdiste 💀';
 
         const embed = new EmbedBuilder()

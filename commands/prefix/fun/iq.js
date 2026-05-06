@@ -14,7 +14,7 @@ module.exports = {
         if (iq < 70) nivel = 'Bajo';
         else if (iq < 100) nivel = 'Normal';
         else if (iq < 130) nivel = 'Alto';
-        else nivel = 'Muy alto';
+        else nivel = 'Muy alto <:Omg:1501396849532342495>';
 
         const embed = new EmbedBuilder()
             .setTitle('🧠 IQ Test')
